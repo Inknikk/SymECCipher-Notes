@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SymECCipher — Speaker Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400;1,600;1,700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f6f3ed;
+    --surface: #ffffff;
+    --surface-hover: #faf8f5;
+    --border: #e3ddd4;
+    --border-light: #d5cec3;
+    --text: #1a1816;
+    --text-secondary: #5f5953;
+    --text-dim: #8a837b;
+    --gold: #b8860b;
+    --gold-glow: rgba(184, 134, 11, 0.07);
+    --gold-border: rgba(184, 134, 11, 0.2);
+    --gold-text: #b8860b;
+    --teal: #1b7a7a;
+    --teal-soft: rgba(27, 122, 122, 0.05);
+    --teal-border: rgba(27, 122, 122, 0.15);
+    --navy: #1e2a3a;
+    --amber: #9a7226;
+    --rose: #b84a3a;
+    --rose-soft: rgba(184, 74, 58, 0.05);
+    --rose-border: rgba(184, 74, 58, 0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* ---- subtle noise overlay ---- */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+    pointer-events: none;
+  }
+
+  /* ---- subtle atmospheric glow ---- */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -40vh;
+    left: -20vw;
+    width: 80vw;
+    height: 80vh;
+    background: radial-gradient(ellipse at center, rgba(184, 134, 11, 0.03) 0%, transparent 70%);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 3rem 2rem 6rem;
+  }
+
+  /* ---- Animations ---- */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes glowPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(184, 134, 11, 0.06), 0 0 60px rgba(184, 134, 11, 0.02); }
+    50% { box-shadow: 0 0 30px rgba(184, 134, 11, 0.1), 0 0 80px rgba(184, 134, 11, 0.03); }
+  }
+
+  /* ---- Header ---- */
+  header {
+    margin-bottom: 3.5rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid var(--border);
+    animation: fadeUp 0.8s ease-out both;
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 3.2rem;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+  }
+
+  header h1 span {
+    color: var(--gold);
+  }
+
+  header .subtitle {
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    max-width: 620px;
+    font-style: italic;
+  }
+
+  header .source {
+    margin-top: 1.2rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  header .source a {
+    color: var(--teal);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+
+  header .source a:hover { border-color: var(--teal); }
+
+  .intro-note {
+    margin-top: 1.5rem;
+    padding: 0.9rem 1.3rem;
+    background: var(--surface);
+    border-radius: 4px;
+    border-left: 3px solid var(--text-dim);
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* ---- Slide card ---- */
+  .slide {
+    margin-bottom: 3rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    position: relative;
+    animation: fadeUp 0.6s ease-out both;
+    transition: border-color 0.25s, box-shadow 0.25s;
+  }
+
+  .slide:hover {
+    border-color: var(--border-light);
+    box-shadow: 0 4px 40px rgba(0,0,0,0.08);
+  }
+
+  .slide:nth-child(2) { animation-delay: 0.05s; }
+  .slide:nth-child(3) { animation-delay: 0.1s; }
+  .slide:nth-child(4) { animation-delay: 0.15s; }
+  .slide:nth-child(5) { animation-delay: 0.2s; }
+  .slide:nth-child(6) { animation-delay: 0.25s; }
+  .slide:nth-child(7) { animation-delay: 0.3s; }
+  .slide:nth-child(8) { animation-delay: 0.35s; }
+  .slide:nth-child(9) { animation-delay: 0.4s; }
+  .slide:nth-child(10) { animation-delay: 0.45s; }
+  .slide:nth-child(11) { animation-delay: 0.5s; }
+
+  .slide-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.4rem 2rem 0.8rem;
+  }
+
+  .slide-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    background: var(--bg);
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .slide-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+
+  .slide-body {
+    padding: 0.6rem 2rem 2rem;
+  }
+
+  /* ---- Slide description ---- */
+  .slide-description {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    padding: 0.6rem 0.9rem;
+    margin-bottom: 1.2rem;
+    line-height: 1.5;
+    border: 1px dashed var(--border);
+    border-radius: 2px;
+    background: rgba(255,255,255,0.02);
+  }
+
+  .slide-description strong {
+    color: var(--text-secondary);
+    font-weight: 600;
+  }
+
+  /* ========== SPEAKER BLOCK — THE STAR ========== */
+  .speaker {
+    background: var(--gold-glow);
+    border: 1px solid var(--gold-border);
+    border-radius: 2px;
+    padding: 1.6rem 1.8rem;
+    margin-bottom: 1.2rem;
+    position: relative;
+    animation: glowPulse 4s ease-in-out infinite;
+  }
+
+  .speaker::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 2px;
+    background: linear-gradient(135deg, rgba(184, 134, 11, 0.08) 0%, transparent 50%, rgba(184, 134, 11, 0.03) 100%);
+    pointer-events: none;
+  }
+
+  .speaker > * { position: relative; z-index: 1; }
+
+  .speaker-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--gold-border);
+  }
+
+  .speaker-label svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    stroke: var(--gold);
+  }
+
+  .speaker p {
+    margin-bottom: 0.7rem;
+    line-height: 1.8;
+    color: #2a2722;
+    font-size: 0.98rem;
+  }
+
+  .speaker p:last-child { margin-bottom: 0; }
+
+  .speaker p em {
+    color: var(--amber);
+    font-style: italic;
+  }
+
+  .speaker p strong {
+    color: #1a1816;
+    font-weight: 600;
+  }
+
+  /* ---- Context block ---- */
+  .context-block {
+    margin-bottom: 0.8rem;
+    padding: 0.8rem 1rem;
+    border-left: 2px solid var(--border);
+  }
+
+  .context-label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    margin-bottom: 0.3rem;
+  }
+
+  .context-label svg {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+    opacity: 0.4;
+  }
+
+  .context-body {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .context-body strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .context-body em {
+    color: var(--teal);
+  }
+
+  /* ---- QA block ---- */
+  .qa-block {
+    margin-top: 1rem;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--teal);
+    border-radius: 2px;
+    padding: 1.1rem 1.3rem;
+    background: var(--teal-soft);
+  }
+
+  .qa-item {
+    margin-bottom: 0.4rem;
+  }
+
+  .qa-item:last-child { margin-bottom: 0; }
+
+  .qa-q {
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text);
+    margin-bottom: 0.15rem;
+  }
+
+  .qa-q em {
+    color: var(--teal);
+    font-style: italic;
+  }
+
+  .qa-a {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    padding-left: 0.2rem;
+  }
+
+  /* ---- Tip block ---- */
+  .tip-block {
+    margin-top: 0.8rem;
+    padding: 0.9rem 1.1rem;
+    font-size: 0.88rem;
+    color: #b8a88a;
+    line-height: 1.5;
+    background: rgba(180, 140, 80, 0.04);
+    border: 1px solid rgba(180, 140, 80, 0.12);
+    border-radius: 2px;
+  }
+
+  .tip-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--amber);
+    margin-bottom: 0.25rem;
+  }
+
+  /* ---- Self-check block ---- */
+  .self-check {
+    margin-top: 1rem;
+    background: rgba(100, 120, 100, 0.04);
+    border: 1px solid rgba(100, 120, 100, 0.15);
+    border-radius: 2px;
+    padding: 1rem 1.3rem;
+  }
+
+  .self-check-label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #5a7a5a;
+    margin-bottom: 0.6rem;
+  }
+
+  .self-check-label svg {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+    stroke: #5a7a5a;
+  }
+
+  .self-check ol {
+    list-style: none;
+    counter-reset: sc;
+    padding: 0;
+  }
+
+  .self-check li {
+    counter-increment: sc;
+    font-size: 0.86rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    padding: 0.3rem 0 0.3rem 1.6rem;
+    position: relative;
+  }
+
+  .self-check li::before {
+    content: counter(sc);
+    position: absolute;
+    left: 0;
+    top: 0.35rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #8aaa8a;
+    width: 1.2rem;
+    height: 1.2rem;
+    border: 1px solid rgba(100, 140, 100, 0.25);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  /* ---- Final notes section ---- */
+  .final-notes {
+    margin-top: 3rem;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--text-dim);
+    border-radius: 2px;
+    padding: 1.8rem 2rem;
+    background: var(--surface);
+    animation: fadeUp 0.6s ease-out both;
+    animation-delay: 0.55s;
+  }
+
+  .final-notes h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 1.2rem;
+    letter-spacing: -0.01em;
+  }
+
+  .final-notes ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .final-notes li {
+    padding: 0.5rem 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    padding-left: 1.5rem;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .final-notes li:last-child { border-bottom: none; }
+
+  .final-notes li::before {
+    content: "◆";
+    position: absolute;
+    left: 0;
+    color: var(--text-dim);
+    font-size: 0.5rem;
+    top: 0.7rem;
+  }
+
+  .final-notes li strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .final-notes li em {
+    color: var(--teal);
+  }
+
+  /* ---- Print styles ---- */
+  @media print {
+    body {
+      background: white;
+      font-size: 11px;
+      color: #1a1816;
+    }
+    body::before, body::after { display: none; }
+    .container { max-width: 100%; padding: 0.4in; }
+    .slide { break-inside: avoid; border: 0.5pt solid #ccc; background: white; animation: none !important; }
+    .slide:hover { box-shadow: none; }
+    .slide-header { padding: 0.6rem 1.2rem 0.3rem; }
+    .slide-body { padding: 0.2rem 1.2rem 0.8rem; }
+    .speaker { background: #fdf6ed; border-color: #dec28a; animation: none !important; }
+    .speaker::before { display: none; }
+    .slide-description { background: #f8f6f3; }
+    .slide-number { background: #f0ede8; }
+    header h1 { color: #1a1816; }
+    header h1 span { color: #b8860b; }
+    .slide-title { color: #1a1816; }
+    .final-notes { background: white; }
+    .qa-block { background: #f4f8f8; }
+    .intro-note { background: #f8f6f3; color: #5f5953; }
+    .final-notes li { color: #5f5953; }
+    .tip-block { color: #7a6430; }
+    .self-check { background: #f6f9f6; border-color: #c8d8c8; }
+    header .source { color: #6b6560; }
+    .slide { margin-bottom: 1.2rem; }
+  }
+
+  @media (max-width: 640px) {
+    .container { padding: 1.2rem; }
+    header h1 { font-size: 2rem; }
+    .slide-header { padding: 1rem 1.2rem 0.6rem; }
+    .slide-body { padding: 0.4rem 1.2rem 1.2rem; }
+    .speaker { padding: 1.2rem; }
+    .speaker p { font-size: 0.95rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<header>
+  <h1>Sym<span>ECC</span>ipher</h1>
+  <div class="subtitle">Speaker Notes — A Hybrid ECC-AES Encryption Framework for Secure, Real-Time Healthcare Data Protection in the Cloud</div>
+  <div class="source">
+    <strong>Source paper:</strong> Selvi, P. &amp; Sakthivel, S. (2025). <em>A hybrid ECC-AES encryption framework for secure and efficient cloud-based data protection.</em> Scientific Reports (Nature Portfolio), Vol. 15, Article 30867.<br>
+    <strong>Link:</strong> <a href="https://www.nature.com/articles/s41598-025-01315-5" target="_blank">nature.com/articles/s41598-025-01315-5</a>
+  </div>
+  <div class="intro-note">This document walks through all 10 slides exactly as a presenter would explain them out loud — what to say, why it matters, and how to handle likely questions.</div>
+</header>
+
+<!-- Slide 1 -->
+<div class="slide">
+  <div class="slide-header">
+    <span class="slide-number">Slide 1</span>
+    <span class="slide-title">Title</span>
+  </div>
+  <div class="slide-body">
+    <div class="slide-description"><strong>What's on the slide:</strong> Title "SymECCipher," subtitle describing the paper, citation line, presenter name.</div>
+
+    <div class="speaker">
+      <div class="speaker-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        What to say
+      </div>
+      <p>"Good [morning/afternoon] everyone. I'm presenting on a 2025 paper from Scientific Reports — that's part of the Nature journal family — called <em>A Hybrid ECC-AES Encryption Framework for Secure and Efficient Cloud-Based Data Protection.</em> The system the authors built is called SymECCipher, and it's designed to solve a very specific, very real problem: how do you keep sensitive healthcare data safe in the cloud <em>without</em> slowing the system down so much that it's unusable in real time?"</p>
+    </div>
+
+    <div class="context-block">
+      <div class="context-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Why this opening works
+      </div>
+      <div class="context-body">Naming the journal immediately establishes credibility — <em>Scientific Reports</em> is peer-reviewed and well-respected, so the audience knows this isn't a random blog post or unverified preprint. It also previews the two things you'll prove by the end: that this is "secure" <strong>AND</strong> "efficient" — that's the whole tension the paper resolves.</div>
+    </div>
+
+    <div class="tip-block">
+      <div class="tip-label">Tip</div>
+      Don't over-explain "ECC" and "AES" yet — that's slide 4's job. Right now, just plant the name "SymECCipher" so it sticks for the rest of the talk.
+    </div>
+  </div>
+</div>
+
+<!-- Slide 2 -->
+<div class="slide">
+  <div class="slide-header">
+    <span class="slide-number">Slide 2</span>
+    <span class="slide-title">The Problem</span>
+  </div>
+  <div class="slide-body">
+    <div class="slide-description"><strong>What's on the slide:</strong> Left card explains the human/healthcare context (mental health data, stigma, trust). Right card (dark) breaks down the core technical tension between RSA-2048 and AES-256.</div>
+
+    <div class="speaker">
+      <div class="speaker-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        What to say
+      </div>
+      <p>"Let's start with why this problem matters. The paper is framed around mental health data specifically — depression detection tools are increasingly cloud-based, meaning they collect behavioral and clinical data and process it remotely. That's powerful for catching early warning signs, but it also means highly sensitive data is sitting in transit and in storage on someone else's servers.</p>
+      <p>Now here's the technical bind. If you use RSA-2048 — a very common, very secure encryption standard — you get strong protection, but it's slow. The paper benchmarks it at 15 milliseconds to encrypt and 12 milliseconds to decrypt. That sounds tiny, but at scale, across thousands of real-time requests, it adds up to serious latency.</p>
+      <p>If you go the other way and use AES-256 by itself, it's fast — but AES is a <em>symmetric</em> algorithm, meaning both sides need the same secret key. And AES has no built-in way to safely share that key over an insecure channel. So you're fast, but exposed.</p>
+      <p>That's the trap: healthcare systems have been forced to choose between strong security and real-time speed. SymECCipher is built specifically to escape that trap."</p>
+    </div>
+
+    <div class="context-block">
+      <div class="context-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Why this slide matters
+      </div>
+      <div class="context-body">This is your "stakes" slide. Without it, the audience won't appreciate why the solution slide is impressive. Spend real time here — it's the foundation everything else builds on.</div>
+    </div>
+
+    <div class="qa-block">
+      <div class="qa-item">
+        <div class="qa-q">Anticipated: <em>"Why does encryption speed even matter for healthcare?"</em></div>
+        <div class="qa-a">Because doctors and patients need near-instant access to records during active care — a few hundred milliseconds of encryption lag per request, multiplied across a hospital's daily traffic, can create real bottlenecks in emergency or high-volume settings.</div>
+      </div>
+    </div>
+
+    <div class="self-check">
+      <div class="self-check-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Self-check
+      </div>
+      <ol>
+        <li>What are the two encryption approaches compared, and why does each one fail on its own?</li>
+        <li>Why would 15ms encryption latency be a problem at hospital scale?</li>
+        <li>What specific type of healthcare data does the paper focus on, and why does that make the security trade-off especially important?</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3 -->
+<div class="slide">
+  <div class="slide-header">
+    <span class="slide-number">Slide 3</span>
+    <span class="slide-title">Why This Matters Right Now</span>
+  </div>
+  <div class="slide-body">
+    <div class="slide-description"><strong>What's on the slide:</strong> Three cards: Cloud-first healthcare, AI-driven diagnostics, Real-time access demands.</div>
+
+    <div class="speaker">
+      <div class="speaker-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        What to say
+      </div>
+      <p>"This isn't a hypothetical problem — three trends are converging right now that make it urgent.</p>
+      <p>First, healthcare has gone cloud-first. Hospitals, clinics, and ML diagnostic platforms don't keep everything on local servers anymore — it's all remote, which means constant exposure risk if encryption isn't airtight.</p>
+      <p>Second, AI is now part of the diagnostic pipeline. When a machine learning model outputs a depression risk score or a diagnostic suggestion, that output is just as sensitive as the original patient data — and it needs the same level of protection. This is something a lot of healthcare security models <em>miss</em> — they protect the input but not the AI's output.</p>
+      <p>Third — and this is the practical constraint — doctors and patients expect real-time access. If a doctor has to wait even a second extra every time they pull up a patient file because of heavy encryption overhead, that adds friction to actual patient care."</p>
+    </div>
+
+    <div class="context-block">
+      <div class="context-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Why this slide matters
+      </div>
+      <div class="context-body">It contextualizes the paper as solving a <em>current</em> and <em>growing</em> problem, not a solved one. This is good for demonstrating to your professor that you understand the broader landscape, not just the one paper.</div>
+    </div>
+
+    <div class="tip-block">
+      <div class="tip-label">Tip</div>
+      If your group is being evaluated on "relevance to modern problems," lean hard into this slide — it's your strongest evidence that the paper is <em>not</em> purely academic/theoretical.
+    </div>
+
+    <div class="self-check">
+      <div class="self-check-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Self-check
+      </div>
+      <ol>
+        <li>Name the three converging trends that make this problem urgent right now.</li>
+        <li>Why do AI-driven diagnostics create a security gap that traditional healthcare encryption models miss?</li>
+        <li>How does the shift to cloud-first healthcare change the encryption requirements compared to on-premise systems?</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4 -->
+<div class="slide">
+  <div class="slide-header">
+    <span class="slide-number">Slide 4</span>
+    <span class="slide-title">The Solution: SymECCipher</span>
+  </div>
+  <div class="slide-body">
+    <div class="slide-description"><strong>What's on the slide:</strong> Two side-by-side cards (ECC in teal, AES-256 in navy) joined by a plus sign, flowing down into a coral "SymECCipher" result card.</div>
+
+    <div class="speaker">
+      <div class="speaker-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        What to say
+      </div>
+      <p>"So here's the actual solution. SymECCipher isn't a brand-new encryption algorithm from scratch — it's a <em>smart combination</em> of two existing, well-trusted ones, each doing the job it's best at.</p>
+      <p>ECC — Elliptic Curve Cryptography — handles the <strong>key exchange</strong>. This is the asymmetric part: two parties (say, a patient's device and the hospital's cloud server) need to agree on a shared secret key without ever transmitting that key directly over the network. ECC does this efficiently — it gives you RSA-level security with much smaller keys, which means much less computational overhead.</p>
+      <p>AES-256 then handles the <strong>actual data encryption</strong> — the bulk symmetric encryption of the patient's health records. AES is fast, it's the global standard, and it's what you want doing the heavy lifting once the key exchange problem is solved.</p>
+      <p>Put them together, and you get SymECCipher: secure key exchange from ECC, plus fast bulk encryption from AES. Neither algorithm alone solves the problem — but combined, they cancel out each other's weaknesses."</p>
+    </div>
+
+    <div class="context-block">
+      <div class="context-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Why this slide matters
+      </div>
+      <div class="context-body">This is the conceptual core of your presentation. If your audience only remembers one slide, it should be this one. Take your time here.</div>
+    </div>
+
+    <div class="qa-block">
+      <div class="qa-item">
+        <div class="qa-q">Anticipated: <em>"Why not just use ECC for everything?"</em></div>
+        <div class="qa-a">ECC is great at key exchange but isn't designed for fast bulk data encryption — it's computationally heavier for that job than AES. Using ECC just for the key handshake and AES for the actual data plays to each algorithm's strengths.</div>
+      </div>
+    </div>
+
+    <div class="self-check">
+      <div class="self-check-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Self-check
+      </div>
+      <ol>
+        <li>What specific role does ECC play in the SymECCipher framework, and why is it better suited for that role than RSA?</li>
+        <li>Why can't AES-256 solve the full problem on its own, despite being fast?</li>
+        <li>What does "hybrid" mean here, and how does the combination cancel out each algorithm's weakness?</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5 -->
+<div class="slide">
+  <div class="slide-header">
+    <span class="slide-number">Slide 5</span>
+    <span class="slide-title">How It Works</span>
+  </div>
+  <div class="slide-body">
+    <div class="slide-description"><strong>What's on the slide:</strong> Four-step horizontal flow: Key Generation → Secure Key Exchange → Data Encryption → Authorized Decryption.</div>
+
+    <div class="speaker">
+      <div class="speaker-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        What to say
+      </div>
+      <p>"Let's walk through what actually happens, step by step, when a patient's data moves through this system.</p>
+      <p><strong>Step one — Key Generation.</strong> ECC generates a public/private key pair for everyone involved — the patient, the doctor, and the cloud server each get their own pair.</p>
+      <p><strong>Step two — Secure Key Exchange.</strong> Using something called ECDH — Elliptic Curve Diffie-Hellman — both sides independently compute the <em>same</em> shared secret key, without that key ever being sent across the network. This is the clever part: even if someone is eavesdropping on the connection, they can't reconstruct the shared key from what they intercept.</p>
+      <p><strong>Step three — Data Encryption.</strong> Now that both sides have the same secret key, AES-256 uses it to encrypt the actual health data into unreadable ciphertext before it's stored or transmitted.</p>
+      <p><strong>Step four — Authorized Decryption.</strong> Only someone holding the correct key — say, the patient's doctor — can run AES in reverse and recover the original, readable data. Anyone without that key just sees scrambled noise."</p>
+    </div>
+
+    <div class="context-block">
+      <div class="context-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Why this slide matters
+      </div>
+      <div class="context-body">This demystifies the process. A lot of crypto presentations stay abstract — this slide grounds it in a literal sequence anyone can follow, even without a math background.</div>
+    </div>
+
+    <div class="tip-block">
+      <div class="tip-label">Tip</div>
+      If you want to simplify further for a less technical audience, you can describe step 2 as: "Both sides do their own private math and somehow land on the exact same secret number — without ever telling each other what that number is." That's the essence of Diffie-Hellman-style exchange.
+    </div>
+
+    <div class="self-check">
+      <div class="self-check-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Self-check
+      </div>
+      <ol>
+        <li>Walk through the four steps of SymECCipher in order. What happens at each step?</li>
+        <li>What makes ECDH especially clever — what can an eavesdropper see on the wire without being able to reconstruct?</li>
+        <li>At what exact moments in this flow is patient data ever in the clear (unencrypted)?</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 7 -->
+<div class="slide">
+  <div class="slide-header">
+    <span class="slide-number">Slide 7</span>
+    <span class="slide-title">System Architecture</span>
+  </div>
+  <div class="slide-body">
+    <div class="slide-description"><strong>What's on the slide:</strong> Three modules (User, Doctor, Cloud) each in their own card, all flowing into a dark bottom bar that says they share one encryption layer.</div>
+
+    <div class="speaker">
+      <div class="speaker-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        What to say
+      </div>
+      <p>"The paper doesn't just propose the encryption method in the abstract — they actually built a working system around it, structured into three modules.</p>
+      <p>The <strong>User Module</strong> is where patients log in securely, browse available doctors, and view their own health reports — which stay encrypted until the exact moment of authorized access.</p>
+      <p>The <strong>Doctor Module</strong> lets healthcare professionals securely decrypt and review patient records, then write treatment recommendations, which get re-encrypted before being stored.</p>
+      <p>The <strong>Cloud Module</strong> is the central repository — every single piece of data, whether it's login credentials, health reports, or doctor recommendations, sits encrypted at rest and in transit.</p>
+      <p>The key point tying it all together: every one of these modules routes through the <em>same</em> SymECCipher encryption layer. There's no module where security is an afterthought — it's baked into the architecture end-to-end."</p>
+    </div>
+
+    <div class="context-block">
+      <div class="context-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Why this slide matters
+      </div>
+      <div class="context-body">This shows the paper isn't purely theoretical — the authors implemented a real, functioning prototype (built with ASP.NET and C#, tested on real hardware), which adds credibility.</div>
+    </div>
+
+    <div class="qa-block">
+      <div class="qa-item">
+        <div class="qa-q">Anticipated: <em>"What hardware/software did they actually build this on?"</em></div>
+        <div class="qa-a">The authors implemented the system using ASP.NET and C#, running on an Intel Core i5-13600K processor with 8GB RAM — a fairly standard development setup, which is good evidence the results are reproducible without specialized hardware.</div>
+      </div>
+    </div>
+
+    <div class="self-check">
+      <div class="self-check-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Self-check
+      </div>
+      <ol>
+        <li>What are the three modules in the SymECCipher system architecture?</li>
+        <li>At what point in this system is data ever in the clear (unencrypted)?</li>
+        <li>Why is it significant that all three modules route through the same encryption layer?</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 8 -->
+<div class="slide">
+  <div class="slide-header">
+    <span class="slide-number">Slide 8</span>
+    <span class="slide-title">Results: It's Faster, Not Just Safer</span>
+  </div>
+  <div class="slide-body">
+    <div class="slide-description"><strong>What's on the slide:</strong> Bar chart comparing encryption/decryption times (RSA-2048, AES-256, ECC-256, SymECCipher) plus two stat callouts: "5ms/4ms" and "25–40%."</div>
+
+    <div class="speaker">
+      <div class="speaker-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        What to say
+      </div>
+      <p>"This is the slide with the receipts. The authors benchmarked SymECCipher against RSA-2048, AES-256 alone, and ECC-256 alone, measuring encryption and decryption time in milliseconds.</p>
+      <p>Look at RSA-2048 — 15 milliseconds to encrypt, 12 to decrypt. That's the slowest of the group, which confirms what we said earlier about RSA's overhead.</p>
+      <p>AES-256 alone is faster — 6 milliseconds encryption, 5 decryption — but remember, it doesn't solve the key exchange problem on its own.</p>
+      <p>SymECCipher comes in at 5 milliseconds encryption and 4 milliseconds decryption — making it the <em>fastest model in the entire comparison</em>, while still carrying the security benefits of asymmetric key exchange.</p>
+      <p>And it's not just faster in isolation — the paper reports a 25 to 40 percent reduction in computational overhead compared to traditional cryptosystems. So this isn't a marginal improvement. It's a meaningful, measurable gain in both speed and resource efficiency."</p>
+    </div>
+
+    <div class="context-block">
+      <div class="context-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Why this slide matters
+      </div>
+      <div class="context-body">Numbers sell credibility. This is the slide that proves the claims from slide 4 weren't just theoretical — they're benchmarked and measured.</div>
+    </div>
+
+    <div class="tip-block">
+      <div class="tip-label">Tip</div>
+      If your professor likes rigor, mention that throughput was also measured at 1000 Mbps, meaning the system can handle high-volume data flow, not just quick one-off requests.
+    </div>
+
+    <div class="qa-block">
+      <div class="qa-item">
+        <div class="qa-q">Anticipated: <em>"Were these benchmarks run in a real cloud environment or a lab simulation?"</em></div>
+        <div class="qa-a">Based on the methodology section, this was implemented and tested as a working prototype on standard development hardware (ASP.NET/C# on an Intel i5 desktop) — not a hyperscale cloud deployment, so real-world cloud-scale results may vary slightly, but the relative comparison between algorithms should hold.</div>
+      </div>
+    </div>
+
+    <div class="self-check">
+      <div class="self-check-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Self-check
+      </div>
+      <ol>
+        <li>What are SymECCipher's encryption and decryption times, and how do they compare to RSA-2048?</li>
+        <li>The paper reports a 25–40% reduction — in what metric?</li>
+        <li>Why is AES-256 alone faster than RSA-2048 in the benchmark but still not the complete solution?</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 9 -->
+<div class="slide">
+  <div class="slide-header">
+    <span class="slide-number">Slide 9</span>
+    <span class="slide-title">What Makes This Novel</span>
+  </div>
+  <div class="slide-body">
+    <div class="slide-description"><strong>What's on the slide:</strong> Four cards: Lightweight key exchange, No security-speed trade-off, Built for cloud scale, Protects AI outputs too.</div>
+
+    <div class="speaker">
+      <div class="speaker-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        What to say
+      </div>
+      <p>"So what's actually new here, compared to other hybrid encryption papers that have combined ECC and AES before? Four things, according to the authors.</p>
+      <p>First, the <strong>key exchange is lighter</strong> — using ECC instead of RSA means faster setup with smaller keys, without losing cryptographic strength.</p>
+      <p>Second, and this is the headline claim — it <strong>avoids the classic security-speed trade-off</strong>. A lot of earlier hybrid models that tried combining symmetric and asymmetric encryption still introduced processing delays. SymECCipher manages to get both high security and high speed at the same time.</p>
+      <p>Third, it's <strong>explicitly built for cloud scale</strong> — not adapted from an older use case like local file encryption, but designed from the ground up for high-throughput, low-latency cloud healthcare systems.</p>
+      <p>And fourth — this one's easy to overlook — it <strong>protects AI-generated outputs</strong>, not just the raw input data. When a machine learning model produces a depression risk score, that score gets encrypted before it's ever stored in the cloud. A lot of healthcare security frameworks protect the patient's original data but completely forget that the AI's <em>conclusions</em> about that patient are just as sensitive."</p>
+    </div>
+
+    <div class="context-block">
+      <div class="context-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Why this slide matters
+      </div>
+      <div class="context-body">This is where you address the "so what" — proving the paper isn't just rehashing existing hybrid encryption ideas, but contributing something distinct.</div>
+    </div>
+
+    <div class="self-check">
+      <div class="self-check-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Self-check
+      </div>
+      <ol>
+        <li>What are the four claims of novelty the authors make about SymECCipher?</li>
+        <li>What does "avoids the classic security-speed trade-off" mean in concrete terms?</li>
+        <li>Why is the protection of AI-generated outputs considered a novel contribution here?</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 10 -->
+<div class="slide">
+  <div class="slide-header">
+    <span class="slide-number">Slide 10</span>
+    <span class="slide-title">Real-World Impact</span>
+  </div>
+  <div class="slide-body">
+    <div class="slide-description"><strong>What's on the slide:</strong> Three cards: Telemedicine platforms, Electronic health records (EHRs), AI-driven diagnostics. Closing italic line about broader applicability.</div>
+
+    <div class="speaker">
+      <div class="speaker-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        What to say
+      </div>
+      <p>"Zooming out from the specific paper — where would a system like this actually get used?</p>
+      <p><strong>Telemedicine platforms</strong> are an obvious fit — real-time video consultations and data sharing need encryption that doesn't introduce noticeable lag.</p>
+      <p><strong>Electronic health records</strong> — hospitals managing decades of patient history need encryption that scales as the dataset grows, without retrieval slowing to a crawl.</p>
+      <p>And <strong>AI-driven diagnostics</strong>, which we've touched on already — as more clinical decision-making gets assisted by machine learning, protecting those AI outputs becomes just as important as protecting the original patient data.</p>
+      <p>And it's worth saying — this isn't only a healthcare problem. The same fundamental trade-off, strong security versus real-time speed, shows up in finance, IoT devices, and any cloud system handling sensitive personal data. SymECCipher's approach is healthcare-specific in this paper, but the underlying hybrid ECC-AES idea generalizes well beyond it."</p>
+    </div>
+
+    <div class="context-block">
+      <div class="context-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Why this slide matters
+      </div>
+      <div class="context-body">This broadens the scope just enough to show you understand the <em>general</em> applicability of the research, not just the narrow case study — good for demonstrating critical thinking to your professor.</div>
+    </div>
+
+    <div class="self-check">
+      <div class="self-check-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Self-check
+      </div>
+      <ol>
+        <li>Name three real-world healthcare domains where SymECCipher would apply directly.</li>
+        <li>What other industries face the same security-vs-speed trade-off?</li>
+        <li>Why is telemedicine a particularly strong fit for this encryption approach?</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 11 -->
+<div class="slide">
+  <div class="slide-header">
+    <span class="slide-number">Slide 11</span>
+    <span class="slide-title">Key Takeaways</span>
+  </div>
+  <div class="slide-body">
+    <div class="slide-description"><strong>What's on the slide:</strong> Four checklist takeaways, full citation, link, and a "Questions?" closer.</div>
+
+    <div class="speaker">
+      <div class="speaker-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        What to say
+      </div>
+      <p>"To wrap up, here's what I want you to walk away with:</p>
+      <p>One — healthcare data in the cloud needs both strong security and real-time speed, and traditional encryption models have historically forced a trade-off between the two.</p>
+      <p>Two — SymECCipher solves this by combining ECC for fast, secure key exchange with AES-256 for fast, reliable data encryption, into a single hybrid framework.</p>
+      <p>Three — it's not just theoretically better, it's measurably better: 5 milliseconds encryption, 4 milliseconds decryption, beating RSA-2048, AES-256, and ECC-256 alone, with 25 to 40 percent less computational overhead.</p>
+      <p>And four — it protects more than just raw patient data. It also protects AI-generated outputs, which matters more every year as machine learning becomes a standard part of healthcare diagnostics.</p>
+      <p>That's SymECCipher — a real-world answer to a real-world problem: how do we keep sensitive data safe without making people wait for it. Happy to take any questions."</p>
+    </div>
+
+    <div class="context-block">
+      <div class="context-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Why this slide matters
+      </div>
+      <div class="context-body">This is your "exam-safe" summary slide — if a professor only remembers four sentences from your entire talk, these should be the four. Read them with conviction, slowly, as your closing statement.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Final notes -->
+<div class="final-notes">
+  <h2>General Presentation Tips</h2>
+  <ul>
+    <li><strong>Pace:</strong> Slides 2 and 4 are the most conceptually dense — slow down there. Slides 3, 6, and 9 are lighter context slides — you can move a bit faster through them.</li>
+    <li><strong>If asked "is this peer-reviewed?":</strong> Yes — <em>Scientific Reports</em> is part of the Nature Portfolio and is a peer-reviewed, indexed journal (ISSN 2045-2322).</li>
+    <li><strong>If asked about limitations the paper doesn't fully address:</strong> The benchmarks were run on a single development machine rather than a distributed cloud environment, and the paper doesn't deeply address quantum-resistance — ECC, like RSA, is theoretically vulnerable to future quantum attacks (the paper does note this as a direction for future work, mentioning lattice-based cryptography as a possible extension).</li>
+    <li><strong>Strongest slide to linger on if time is short:</strong> Slide 7 (the benchmark chart) — it's the most visually persuasive and easiest for any audience to grasp instantly.</li>
+  </ul>
+</div>
+
+</div>
+
+</body>
+</html>
