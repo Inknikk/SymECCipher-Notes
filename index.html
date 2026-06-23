@@ -391,6 +391,87 @@
     margin-bottom: 0.25rem;
   }
 
+  /* ---- Collapsible sections ---- */
+  .collapse-context, .collapse-tip, .collapse-qa, .collapse-check {
+    margin-top: 1rem;
+  }
+
+  .collapse-summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    user-select: none;
+    padding: 0.5rem 0.8rem;
+    border-radius: var(--r-sm);
+    transition: background 0.2s;
+    color: var(--text-dim);
+  }
+
+  .collapse-summary::-webkit-details-marker { display: none; }
+
+  .collapse-summary:hover { background: rgba(0,0,0,0.03); }
+
+  .collapse-context .collapse-summary { color: var(--text-dim); }
+  .collapse-tip .collapse-summary { color: var(--amber); }
+  .collapse-qa .collapse-summary { color: var(--teal); }
+  .collapse-check .collapse-summary { color: #5a7a5a; }
+
+  .collapse-indicator {
+    margin-left: auto;
+    font-size: 0.55rem;
+    transition: transform 0.25s;
+    opacity: 0.4;
+    font-family: sans-serif;
+  }
+
+  details[open] .collapse-indicator {
+    transform: rotate(180deg);
+  }
+
+  .collapse-summary svg {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+    opacity: 0.5;
+  }
+
+  .collapse-context .collapse-summary svg { stroke: var(--text-dim); }
+  .collapse-tip .collapse-summary svg { stroke: var(--amber); }
+  .collapse-qa .collapse-summary svg { stroke: var(--teal); }
+  .collapse-check .collapse-summary svg { stroke: #5a7a5a; }
+
+  .collapse-context, .collapse-tip { border: none; background: none; padding: 0; }
+  .collapse-qa, .collapse-check { border: 1px solid; padding: 0; }
+
+  .collapse-qa {
+    border-color: var(--teal-border);
+    background: var(--teal-soft);
+    border-radius: var(--r-sm);
+  }
+
+  .collapse-check {
+    border-color: rgba(100, 120, 100, 0.15);
+    background: rgba(100, 120, 100, 0.04);
+    border-radius: var(--r-sm);
+  }
+
+  .collapse-qa .collapse-summary { padding: 0.9rem 1.2rem; }
+  .collapse-check .collapse-summary { padding: 0.9rem 1.2rem; }
+
+  .collapse-body {
+    padding: 0 1.2rem 1.1rem;
+  }
+
+  .collapse-body .context-body { padding: 0; }
+  .collapse-body .tip-text { font-size: 0.88rem; color: #7a6430; line-height: 1.5; }
+
   /* ---- Self-check block ---- */
   .self-check {
     margin-top: 1rem;
@@ -531,22 +612,43 @@
     header h1 span { color: #b8860b; }
     .slide-title { color: #1a1816; }
     .final-notes { background: white; }
-    .qa-block { background: #f4f8f8; }
     .intro-note { background: #f8f6f3; color: #5f5953; }
     .final-notes li { color: #5f5953; }
-    .tip-block { color: #7a6430; }
-    .self-check { background: #f6f9f6; border-color: #c8d8c8; }
     header .source { color: #6b6560; }
     .slide { margin-bottom: 1.2rem; }
+    details { break-inside: avoid; }
+    details[open] .collapse-indicator { transform: none; }
+    .collapse-indicator { display: none; }
   }
 
   @media (max-width: 640px) {
-    .container { padding: 1.2rem; }
-    header h1 { font-size: 2rem; }
-    .slide-header { padding: 1rem 1.2rem 0.6rem; }
-    .slide-body { padding: 0.4rem 1.2rem 1.2rem; }
-    .speaker { padding: 1.2rem; }
-    .speaker p { font-size: 0.95rem; }
+    .container { padding: 0.8rem; }
+    header { margin-bottom: 2rem; padding-bottom: 1.5rem; }
+    header h1 { font-size: 1.6rem; letter-spacing: -0.01em; }
+    header .subtitle { font-size: 0.82rem; }
+    header .source { font-size: 0.75rem; }
+    .intro-note { font-size: 0.8rem; padding: 0.6rem 0.9rem; }
+    .slide { margin-bottom: 1.5rem; }
+    .slide-header { padding: 0.8rem 1rem 0.4rem; gap: 0.6rem; }
+    .slide-title { font-size: 1rem; }
+    .slide-body { padding: 0.3rem 1rem 1rem; }
+    .slide-description { font-size: 0.78rem; padding: 0.5rem 0.7rem; margin-bottom: 0.8rem; }
+    .speaker { padding: 0.9rem; margin-bottom: 0.8rem; }
+    .speaker p { font-size: 0.88rem; line-height: 1.65; }
+    .speaker-label { font-size: 0.6rem; margin-bottom: 0.5rem; padding-bottom: 0.4rem; }
+    .speaker-label svg { width: 12px; height: 12px; }
+    .context-block { padding: 0.5rem 0.7rem; }
+    .collapse-summary { font-size: 0.65rem; padding: 0.4rem 0.6rem; }
+    .collapse-body { padding: 0 0.8rem 0.8rem; }
+    .collapse-body .context-body, .qa-a, .self-check li, .tip-text { font-size: 0.8rem; }
+    .qa-q { font-size: 0.82rem; }
+    .final-notes { padding: 1rem 1.2rem; margin-top: 2rem; }
+    .final-notes h2 { font-size: 0.95rem; }
+    .final-notes li { font-size: 0.8rem; padding: 0.35rem 0 0.35rem 1.2rem; }
+    .self-check li { padding: 0.2rem 0 0.2rem 1.4rem; }
+    .self-check li::before { width: 1rem; height: 1rem; font-size: 0.6rem; }
+    .collapse-qa .collapse-summary { padding: 0.6rem 0.8rem; }
+    .collapse-check .collapse-summary { padding: 0.6rem 0.8rem; }
   }
 </style>
 </head>
@@ -581,18 +683,26 @@
       <p>"Good [morning/afternoon] everyone. I'm presenting on a 2025 paper from Scientific Reports — that's part of the Nature journal family — called <em>A Hybrid ECC-AES Encryption Framework for Secure and Efficient Cloud-Based Data Protection.</em> The system the authors built is called SymECCipher, and it's designed to solve a very specific, very real problem: how do you keep sensitive healthcare data safe in the cloud <em>without</em> slowing the system down so much that it's unusable in real time?"</p>
     </div>
 
-    <div class="context-block">
-      <div class="context-label">
+    <details class="collapse-context">
+      <summary class="collapse-summary">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
         Why this opening works
+        <span class="collapse-indicator">▼</span>
+      </summary>
+      <div class="collapse-body">
+        <div class="context-body">Naming the journal immediately establishes credibility — <em>Scientific Reports</em> is peer-reviewed and well-respected, so the audience knows this isn't a random blog post or unverified preprint. It also previews the two things you'll prove by the end: that this is "secure" <strong>AND</strong> "efficient" — that's the whole tension the paper resolves.</div>
       </div>
-      <div class="context-body">Naming the journal immediately establishes credibility — <em>Scientific Reports</em> is peer-reviewed and well-respected, so the audience knows this isn't a random blog post or unverified preprint. It also previews the two things you'll prove by the end: that this is "secure" <strong>AND</strong> "efficient" — that's the whole tension the paper resolves.</div>
-    </div>
+    </details>
 
-    <div class="tip-block">
-      <div class="tip-label">Tip</div>
-      Don't over-explain "ECC" and "AES" yet — that's slide 4's job. Right now, just plant the name "SymECCipher" so it sticks for the rest of the talk.
-    </div>
+    <details class="collapse-tip">
+      <summary class="collapse-summary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>Tip
+        <span class="collapse-indicator">▼</span>
+      </summary>
+      <div class="collapse-body">
+        <div class="tip-text">Don't over-explain "ECC" and "AES" yet — that's slide 4's job. Right now, just plant the name "SymECCipher" so it sticks for the rest of the talk.</div>
+      </div>
+    </details>
   </div>
 </div>
 
@@ -616,32 +726,43 @@
       <p>That's the trap: healthcare systems have been forced to choose between strong security and real-time speed. SymECCipher is built specifically to escape that trap."</p>
     </div>
 
-    <div class="context-block">
-      <div class="context-label">
+    <details class="collapse-context">
+      <summary class="collapse-summary">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
         Why this slide matters
+        <span class="collapse-indicator">▼</span>
+      </summary>
+      <div class="collapse-body">
+        <div class="context-body">This is your "stakes" slide. Without it, the audience won't appreciate why the solution slide is impressive. Spend real time here — it's the foundation everything else builds on.</div>
       </div>
-      <div class="context-body">This is your "stakes" slide. Without it, the audience won't appreciate why the solution slide is impressive. Spend real time here — it's the foundation everything else builds on.</div>
-    </div>
+    </details>
 
-    <div class="qa-block">
-      <div class="qa-item">
-        <div class="qa-q">Anticipated: <em>"Why does encryption speed even matter for healthcare?"</em></div>
-        <div class="qa-a">Because doctors and patients need near-instant access to records during active care — a few hundred milliseconds of encryption lag per request, multiplied across a hospital's daily traffic, can create real bottlenecks in emergency or high-volume settings.</div>
+    <details class="collapse-qa" open>
+      <summary class="collapse-summary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>Anticipated Q&amp;A
+        <span class="collapse-indicator">▼</span>
+      </summary>
+      <div class="collapse-body">
+        <div class="qa-item">
+          <div class="qa-q">Anticipated: <em>"Why does encryption speed even matter for healthcare?"</em></div>
+          <div class="qa-a">Because doctors and patients need near-instant access to records during active care — a few hundred milliseconds of encryption lag per request, multiplied across a hospital's daily traffic, can create real bottlenecks in emergency or high-volume settings.</div>
+        </div>
       </div>
-    </div>
+    </details>
 
-    <div class="self-check">
-      <div class="self-check-label">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        Self-check
+    <details class="collapse-check">
+      <summary class="collapse-summary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Self-check
+        <span class="collapse-indicator">▼</span>
+      </summary>
+      <div class="collapse-body">
+        <ol>
+          <li>What are the two encryption approaches compared, and why does each one fail on its own?</li>
+          <li>Why would 15ms encryption latency be a problem at hospital scale?</li>
+          <li>What specific type of healthcare data does the paper focus on, and why does that make the security trade-off especially important?</li>
+        </ol>
       </div>
-      <ol>
-        <li>What are the two encryption approaches compared, and why does each one fail on its own?</li>
-        <li>Why would 15ms encryption latency be a problem at hospital scale?</li>
-        <li>What specific type of healthcare data does the paper focus on, and why does that make the security trade-off especially important?</li>
-      </ol>
-    </div>
+    </details>
   </div>
 </div>
 
@@ -665,30 +786,40 @@
       <p>Third — and this is the practical constraint — doctors and patients expect real-time access. If a doctor has to wait even a second extra every time they pull up a patient file because of heavy encryption overhead, that adds friction to actual patient care."</p>
     </div>
 
-    <div class="context-block">
-      <div class="context-label">
+    <details class="collapse-context">
+      <summary class="collapse-summary">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
         Why this slide matters
+        <span class="collapse-indicator">▼</span>
+      </summary>
+      <div class="collapse-body">
+        <div class="context-body">It contextualizes the paper as solving a <em>current</em> and <em>growing</em> problem, not a solved one. This is good for demonstrating to your professor that you understand the broader landscape, not just the one paper.</div>
       </div>
-      <div class="context-body">It contextualizes the paper as solving a <em>current</em> and <em>growing</em> problem, not a solved one. This is good for demonstrating to your professor that you understand the broader landscape, not just the one paper.</div>
-    </div>
+    </details>
 
-    <div class="tip-block">
-      <div class="tip-label">Tip</div>
-      If your group is being evaluated on "relevance to modern problems," lean hard into this slide — it's your strongest evidence that the paper is <em>not</em> purely academic/theoretical.
-    </div>
-
-    <div class="self-check">
-      <div class="self-check-label">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        Self-check
+    <details class="collapse-tip">
+      <summary class="collapse-summary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>Tip
+        <span class="collapse-indicator">▼</span>
+      </summary>
+      <div class="collapse-body">
+        <div class="tip-text">If your group is being evaluated on "relevance to modern problems," lean hard into this slide — it's your strongest evidence that the paper is <em>not</em> purely academic/theoretical.</div>
       </div>
-      <ol>
-        <li>Name the three converging trends that make this problem urgent right now.</li>
-        <li>Why do AI-driven diagnostics create a security gap that traditional healthcare encryption models miss?</li>
-        <li>How does the shift to cloud-first healthcare change the encryption requirements compared to on-premise systems?</li>
-      </ol>
-    </div>
+    </details>
+
+    <details class="collapse-check">
+      <summary class="collapse-summary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Self-check
+        <span class="collapse-indicator">▼</span>
+      </summary>
+      <div class="collapse-body">
+        <ol>
+          <li>Name the three converging trends that make this problem urgent right now.</li>
+          <li>Why do AI-driven diagnostics create a security gap that traditional healthcare encryption models miss?</li>
+          <li>How does the shift to cloud-first healthcare change the encryption requirements compared to on-premise systems?</li>
+        </ol>
+      </div>
+    </details>
   </div>
 </div>
 
@@ -712,32 +843,43 @@
       <p>Put them together, and you get SymECCipher: secure key exchange from ECC, plus fast bulk encryption from AES. Neither algorithm alone solves the problem — but combined, they cancel out each other's weaknesses."</p>
     </div>
 
-    <div class="context-block">
-      <div class="context-label">
+    <details class="collapse-context">
+      <summary class="collapse-summary">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
         Why this slide matters
+        <span class="collapse-indicator">▼</span>
+      </summary>
+      <div class="collapse-body">
+        <div class="context-body">This is the conceptual core of your presentation. If your audience only remembers one slide, it should be this one. Take your time here.</div>
       </div>
-      <div class="context-body">This is the conceptual core of your presentation. If your audience only remembers one slide, it should be this one. Take your time here.</div>
-    </div>
+    </details>
 
-    <div class="qa-block">
-      <div class="qa-item">
-        <div class="qa-q">Anticipated: <em>"Why not just use ECC for everything?"</em></div>
-        <div class="qa-a">ECC is great at key exchange but isn't designed for fast bulk data encryption — it's computationally heavier for that job than AES. Using ECC just for the key handshake and AES for the actual data plays to each algorithm's strengths.</div>
+    <details class="collapse-qa" open>
+      <summary class="collapse-summary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>Anticipated Q&amp;A
+        <span class="collapse-indicator">▼</span>
+      </summary>
+      <div class="collapse-body">
+        <div class="qa-item">
+          <div class="qa-q">Anticipated: <em>"Why not just use ECC for everything?"</em></div>
+          <div class="qa-a">ECC is great at key exchange but isn't designed for fast bulk data encryption — it's computationally heavier for that job than AES. Using ECC just for the key handshake and AES for the actual data plays to each algorithm's strengths.</div>
+        </div>
       </div>
-    </div>
+    </details>
 
-    <div class="self-check">
-      <div class="self-check-label">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        Self-check
+    <details class="collapse-check">
+      <summary class="collapse-summary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Self-check
+        <span class="collapse-indicator">▼</span>
+      </summary>
+      <div class="collapse-body">
+        <ol>
+          <li>What specific role does ECC play in the SymECCipher framework, and why is it better suited for that role than RSA?</li>
+          <li>Why can't AES-256 solve the full problem on its own, despite being fast?</li>
+          <li>What does "hybrid" mean here, and how does the combination cancel out each algorithm's weakness?</li>
+        </ol>
       </div>
-      <ol>
-        <li>What specific role does ECC play in the SymECCipher framework, and why is it better suited for that role than RSA?</li>
-        <li>Why can't AES-256 solve the full problem on its own, despite being fast?</li>
-        <li>What does "hybrid" mean here, and how does the combination cancel out each algorithm's weakness?</li>
-      </ol>
-    </div>
+    </details>
   </div>
 </div>
 
@@ -762,30 +904,40 @@
       <p><strong>Step four — Authorized Decryption.</strong> Only someone holding the correct key — say, the patient's doctor — can run AES in reverse and recover the original, readable data. Anyone without that key just sees scrambled noise."</p>
     </div>
 
-    <div class="context-block">
-      <div class="context-label">
+    <details class="collapse-context">
+      <summary class="collapse-summary">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
         Why this slide matters
+        <span class="collapse-indicator">▼</span>
+      </summary>
+      <div class="collapse-body">
+        <div class="context-body">This demystifies the process. A lot of crypto presentations stay abstract — this slide grounds it in a literal sequence anyone can follow, even without a math background.</div>
       </div>
-      <div class="context-body">This demystifies the process. A lot of crypto presentations stay abstract — this slide grounds it in a literal sequence anyone can follow, even without a math background.</div>
-    </div>
+    </details>
 
-    <div class="tip-block">
-      <div class="tip-label">Tip</div>
-      If you want to simplify further for a less technical audience, you can describe step 2 as: "Both sides do their own private math and somehow land on the exact same secret number — without ever telling each other what that number is." That's the essence of Diffie-Hellman-style exchange.
-    </div>
-
-    <div class="self-check">
-      <div class="self-check-label">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        Self-check
+    <details class="collapse-tip">
+      <summary class="collapse-summary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>Tip
+        <span class="collapse-indicator">▼</span>
+      </summary>
+      <div class="collapse-body">
+        <div class="tip-text">If you want to simplify further for a less technical audience, you can describe step 2 as: "Both sides do their own private math and somehow land on the exact same secret number — without ever telling each other what that number is." That's the essence of Diffie-Hellman-style exchange.</div>
       </div>
-      <ol>
-        <li>Walk through the four steps of SymECCipher in order. What happens at each step?</li>
-        <li>What makes ECDH especially clever — what can an eavesdropper see on the wire without being able to reconstruct?</li>
-        <li>At what exact moments in this flow is patient data ever in the clear (unencrypted)?</li>
-      </ol>
-    </div>
+    </details>
+
+    <details class="collapse-check">
+      <summary class="collapse-summary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Self-check
+        <span class="collapse-indicator">▼</span>
+      </summary>
+      <div class="collapse-body">
+        <ol>
+          <li>Walk through the four steps of SymECCipher in order. What happens at each step?</li>
+          <li>What makes ECDH especially clever — what can an eavesdropper see on the wire without being able to reconstruct?</li>
+          <li>At what exact moments in this flow is patient data ever in the clear (unencrypted)?</li>
+        </ol>
+      </div>
+    </details>
   </div>
 </div>
 
@@ -810,32 +962,43 @@
       <p>The key point tying it all together: every one of these modules routes through the <em>same</em> SymECCipher encryption layer. There's no module where security is an afterthought — it's baked into the architecture end-to-end."</p>
     </div>
 
-    <div class="context-block">
-      <div class="context-label">
+    <details class="collapse-context">
+      <summary class="collapse-summary">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
         Why this slide matters
+        <span class="collapse-indicator">▼</span>
+      </summary>
+      <div class="collapse-body">
+        <div class="context-body">This shows the paper isn't purely theoretical — the authors implemented a real, functioning prototype (built with ASP.NET and C#, tested on real hardware), which adds credibility.</div>
       </div>
-      <div class="context-body">This shows the paper isn't purely theoretical — the authors implemented a real, functioning prototype (built with ASP.NET and C#, tested on real hardware), which adds credibility.</div>
-    </div>
+    </details>
 
-    <div class="qa-block">
-      <div class="qa-item">
-        <div class="qa-q">Anticipated: <em>"What hardware/software did they actually build this on?"</em></div>
-        <div class="qa-a">The authors implemented the system using ASP.NET and C#, running on an Intel Core i5-13600K processor with 8GB RAM — a fairly standard development setup, which is good evidence the results are reproducible without specialized hardware.</div>
+    <details class="collapse-qa" open>
+      <summary class="collapse-summary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>Anticipated Q&amp;A
+        <span class="collapse-indicator">▼</span>
+      </summary>
+      <div class="collapse-body">
+        <div class="qa-item">
+          <div class="qa-q">Anticipated: <em>"What hardware/software did they actually build this on?"</em></div>
+          <div class="qa-a">The authors implemented the system using ASP.NET and C#, running on an Intel Core i5-13600K processor with 8GB RAM — a fairly standard development setup, which is good evidence the results are reproducible without specialized hardware.</div>
+        </div>
       </div>
-    </div>
+    </details>
 
-    <div class="self-check">
-      <div class="self-check-label">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        Self-check
+    <details class="collapse-check">
+      <summary class="collapse-summary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Self-check
+        <span class="collapse-indicator">▼</span>
+      </summary>
+      <div class="collapse-body">
+        <ol>
+          <li>What are the three modules in the SymECCipher system architecture?</li>
+          <li>At what point in this system is data ever in the clear (unencrypted)?</li>
+          <li>Why is it significant that all three modules route through the same encryption layer?</li>
+        </ol>
       </div>
-      <ol>
-        <li>What are the three modules in the SymECCipher system architecture?</li>
-        <li>At what point in this system is data ever in the clear (unencrypted)?</li>
-        <li>Why is it significant that all three modules route through the same encryption layer?</li>
-      </ol>
-    </div>
+    </details>
   </div>
 </div>
 
@@ -860,37 +1023,53 @@
       <p>And it's not just faster in isolation — the paper reports a 25 to 40 percent reduction in computational overhead compared to traditional cryptosystems. So this isn't a marginal improvement. It's a meaningful, measurable gain in both speed and resource efficiency."</p>
     </div>
 
-    <div class="context-block">
-      <div class="context-label">
+    <details class="collapse-context">
+      <summary class="collapse-summary">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
         Why this slide matters
+        <span class="collapse-indicator">▼</span>
+      </summary>
+      <div class="collapse-body">
+        <div class="context-body">Numbers sell credibility. This is the slide that proves the claims from slide 4 weren't just theoretical — they're benchmarked and measured.</div>
       </div>
-      <div class="context-body">Numbers sell credibility. This is the slide that proves the claims from slide 4 weren't just theoretical — they're benchmarked and measured.</div>
-    </div>
+    </details>
 
-    <div class="tip-block">
-      <div class="tip-label">Tip</div>
-      If your professor likes rigor, mention that throughput was also measured at 1000 Mbps, meaning the system can handle high-volume data flow, not just quick one-off requests.
-    </div>
-
-    <div class="qa-block">
-      <div class="qa-item">
-        <div class="qa-q">Anticipated: <em>"Were these benchmarks run in a real cloud environment or a lab simulation?"</em></div>
-        <div class="qa-a">Based on the methodology section, this was implemented and tested as a working prototype on standard development hardware (ASP.NET/C# on an Intel i5 desktop) — not a hyperscale cloud deployment, so real-world cloud-scale results may vary slightly, but the relative comparison between algorithms should hold.</div>
+    <details class="collapse-tip">
+      <summary class="collapse-summary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>Tip
+        <span class="collapse-indicator">▼</span>
+      </summary>
+      <div class="collapse-body">
+        <div class="tip-text">If your professor likes rigor, mention that throughput was also measured at 1000 Mbps, meaning the system can handle high-volume data flow, not just quick one-off requests.</div>
       </div>
-    </div>
+    </details>
 
-    <div class="self-check">
-      <div class="self-check-label">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        Self-check
+    <details class="collapse-qa" open>
+      <summary class="collapse-summary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>Anticipated Q&amp;A
+        <span class="collapse-indicator">▼</span>
+      </summary>
+      <div class="collapse-body">
+        <div class="qa-item">
+          <div class="qa-q">Anticipated: <em>"Were these benchmarks run in a real cloud environment or a lab simulation?"</em></div>
+          <div class="qa-a">Based on the methodology section, this was implemented and tested as a working prototype on standard development hardware (ASP.NET/C# on an Intel i5 desktop) — not a hyperscale cloud deployment, so real-world cloud-scale results may vary slightly, but the relative comparison between algorithms should hold.</div>
+        </div>
       </div>
-      <ol>
-        <li>What are SymECCipher's encryption and decryption times, and how do they compare to RSA-2048?</li>
-        <li>The paper reports a 25–40% reduction — in what metric?</li>
-        <li>Why is AES-256 alone faster than RSA-2048 in the benchmark but still not the complete solution?</li>
-      </ol>
-    </div>
+    </details>
+
+    <details class="collapse-check">
+      <summary class="collapse-summary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Self-check
+        <span class="collapse-indicator">▼</span>
+      </summary>
+      <div class="collapse-body">
+        <ol>
+          <li>What are SymECCipher's encryption and decryption times, and how do they compare to RSA-2048?</li>
+          <li>The paper reports a 25–40% reduction — in what metric?</li>
+          <li>Why is AES-256 alone faster than RSA-2048 in the benchmark but still not the complete solution?</li>
+        </ol>
+      </div>
+    </details>
   </div>
 </div>
 
@@ -915,25 +1094,30 @@
       <p>And fourth — this one's easy to overlook — it <strong>protects AI-generated outputs</strong>, not just the raw input data. When a machine learning model produces a depression risk score, that score gets encrypted before it's ever stored in the cloud. A lot of healthcare security frameworks protect the patient's original data but completely forget that the AI's <em>conclusions</em> about that patient are just as sensitive."</p>
     </div>
 
-    <div class="context-block">
-      <div class="context-label">
+    <details class="collapse-context">
+      <summary class="collapse-summary">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
         Why this slide matters
+        <span class="collapse-indicator">▼</span>
+      </summary>
+      <div class="collapse-body">
+        <div class="context-body">This is where you address the "so what" — proving the paper isn't just rehashing existing hybrid encryption ideas, but contributing something distinct.</div>
       </div>
-      <div class="context-body">This is where you address the "so what" — proving the paper isn't just rehashing existing hybrid encryption ideas, but contributing something distinct.</div>
-    </div>
+    </details>
 
-    <div class="self-check">
-      <div class="self-check-label">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        Self-check
+    <details class="collapse-check">
+      <summary class="collapse-summary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Self-check
+        <span class="collapse-indicator">▼</span>
+      </summary>
+      <div class="collapse-body">
+        <ol>
+          <li>What are the four claims of novelty the authors make about SymECCipher?</li>
+          <li>What does "avoids the classic security-speed trade-off" mean in concrete terms?</li>
+          <li>Why is the protection of AI-generated outputs considered a novel contribution here?</li>
+        </ol>
       </div>
-      <ol>
-        <li>What are the four claims of novelty the authors make about SymECCipher?</li>
-        <li>What does "avoids the classic security-speed trade-off" mean in concrete terms?</li>
-        <li>Why is the protection of AI-generated outputs considered a novel contribution here?</li>
-      </ol>
-    </div>
+    </details>
   </div>
 </div>
 
@@ -958,25 +1142,30 @@
       <p>And it's worth saying — this isn't only a healthcare problem. The same fundamental trade-off, strong security versus real-time speed, shows up in finance, IoT devices, and any cloud system handling sensitive personal data. SymECCipher's approach is healthcare-specific in this paper, but the underlying hybrid ECC-AES idea generalizes well beyond it."</p>
     </div>
 
-    <div class="context-block">
-      <div class="context-label">
+    <details class="collapse-context">
+      <summary class="collapse-summary">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
         Why this slide matters
+        <span class="collapse-indicator">▼</span>
+      </summary>
+      <div class="collapse-body">
+        <div class="context-body">This broadens the scope just enough to show you understand the <em>general</em> applicability of the research, not just the narrow case study — good for demonstrating critical thinking to your professor.</div>
       </div>
-      <div class="context-body">This broadens the scope just enough to show you understand the <em>general</em> applicability of the research, not just the narrow case study — good for demonstrating critical thinking to your professor.</div>
-    </div>
+    </details>
 
-    <div class="self-check">
-      <div class="self-check-label">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        Self-check
+    <details class="collapse-check">
+      <summary class="collapse-summary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Self-check
+        <span class="collapse-indicator">▼</span>
+      </summary>
+      <div class="collapse-body">
+        <ol>
+          <li>Name three real-world healthcare domains where SymECCipher would apply directly.</li>
+          <li>What other industries face the same security-vs-speed trade-off?</li>
+          <li>Why is telemedicine a particularly strong fit for this encryption approach?</li>
+        </ol>
       </div>
-      <ol>
-        <li>Name three real-world healthcare domains where SymECCipher would apply directly.</li>
-        <li>What other industries face the same security-vs-speed trade-off?</li>
-        <li>Why is telemedicine a particularly strong fit for this encryption approach?</li>
-      </ol>
-    </div>
+    </details>
   </div>
 </div>
 
@@ -1002,13 +1191,16 @@
       <p>That's SymECCipher — a real-world answer to a real-world problem: how do we keep sensitive data safe without making people wait for it. Happy to take any questions."</p>
     </div>
 
-    <div class="context-block">
-      <div class="context-label">
+    <details class="collapse-context">
+      <summary class="collapse-summary">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
         Why this slide matters
+        <span class="collapse-indicator">▼</span>
+      </summary>
+      <div class="collapse-body">
+        <div class="context-body">This is your "exam-safe" summary slide — if a professor only remembers four sentences from your entire talk, these should be the four. Read them with conviction, slowly, as your closing statement.</div>
       </div>
-      <div class="context-body">This is your "exam-safe" summary slide — if a professor only remembers four sentences from your entire talk, these should be the four. Read them with conviction, slowly, as your closing statement.</div>
-    </div>
+    </details>
   </div>
 </div>
 
